@@ -1,4 +1,4 @@
-'¿ªÊ¼
+'å¼€å§‹
 Option Explicit
  
 Dim mdl ' the current model
@@ -15,7 +15,7 @@ If RQ = vbYes Then
     ' Open & Create  Excel Document
     Dim x1 '
     Set x1 = CreateObject("Excel.Application")
-    x1.Workbooks.Open "C:\Users\Administrator\Desktop\v1.xlsx" 'Ö¸¶¨ excelÎÄµµÂ·¾¶
+    x1.Workbooks.Open "C:\Users\Administrator\Desktop\xx\æ•°æ®åº“è®¾è®¡\ç¬¬ä¸€ç‰ˆè¡¨ç»“æ„\v1.xlsx" 'æŒ‡å®š excelæ–‡æ¡£è·¯å¾„
 Else
     HaveExcel = False
 End If
@@ -31,44 +31,46 @@ dim col
 dim count
 dim sheetIndex 
 on error Resume Next
-For sheetIndex = 1 To 200 'Ö¸¶¨Òª±éÀúµÄ Sheet
-    x1.Workbooks(1).Worksheets(sheetIndex).Activate 'Ö¸¶¨Òª´ò¿ªµÄsheetÃû³Æ
+For sheetIndex = 1 To 200 'æŒ‡å®šè¦éå†çš„ Sheet
+    x1.Workbooks(1).Worksheets(sheetIndex).Activate 'æŒ‡å®šè¦æ‰“å¼€çš„sheetåç§°
     With x1.Workbooks(1).Worksheets(sheetIndex)
     If .Cells(1, 1).Value = "" Then
         Exit For
     End If
-    set table = mdl.Tables.CreateNew '´´½¨Ò»¸ö ±íÊµÌå
-    table.Name = .Cells(1, 2).Value 'Ö¸¶¨ ±íÃû£¬Èç¹ûÔÚ ExcelÎÄµµÀïÓĞ£¬Ò²¿ÉÒÔ .Cells(rwIndex, 3).Value ÕâÑùÖ¸¶¨
-    table.Code = .Cells(1, 4).Value 'Ö¸¶¨ ±íÃû
+    set table = mdl.Tables.CreateNew 'åˆ›å»ºä¸€ä¸ª è¡¨å®ä½“
+    table.Name = .Cells(1, 2).Value 'æŒ‡å®š è¡¨åï¼Œå¦‚æœåœ¨ Excelæ–‡æ¡£é‡Œæœ‰ï¼Œä¹Ÿå¯ä»¥ .Cells(rwIndex, 3).Value è¿™æ ·æŒ‡å®š
+    table.Code = .Cells(1, 4).Value 'æŒ‡å®š è¡¨å
+	table.Comment = .Cells(1, 5).Value 'æŒ‡å®š è¡¨è¯´æ˜;
     count = count + 1
  
-    For rwIndex = 3 To 1000 'Ö¸¶¨Òª±éÀúµÄ ExcelĞĞ±ê ÓÉÓÚµÚ2ĞĞÊÇÁĞµÄ ±íÍ·£¬ ´ÓµÚ3ĞĞ¿ªÊ¼
+    For rwIndex = 3 To 1000 'æŒ‡å®šè¦éå†çš„ Excelè¡Œæ ‡ ç”±äºç¬¬2è¡Œæ˜¯åˆ—çš„ è¡¨å¤´ï¼Œ ä»ç¬¬3è¡Œå¼€å§‹
          
             If .Cells(rwIndex, 1).Value = "" Then
             Exit For
             End If
  
-            set col = table.Columns.CreateNew '´´½¨Ò»ÁĞ/×Ö¶Î
-            'MsgBox .Cells(rwIndex, 1).Value, vbOK + vbInformation, "ÁĞ"
+            set col = table.Columns.CreateNew 'åˆ›å»ºä¸€åˆ—/å­—æ®µ
+            'MsgBox .Cells(rwIndex, 1).Value, vbOK + vbInformation, "åˆ—"
             If .Cells(rwIndex, 1).Value = "" Then
-                col.Name = .Cells(rwIndex, 2).Value 'Ö¸¶¨ÁĞÃû-----Èç¹ûµÚ1ÁĞ(Name)Îª¿Õ£¬ÔòÏÔÊ¾µÚ2ÁĞµÄCode
+                col.Name = .Cells(rwIndex, 2).Value 'æŒ‡å®šåˆ—å-----å¦‚æœç¬¬1åˆ—(Name)ä¸ºç©ºï¼Œåˆ™æ˜¾ç¤ºç¬¬2åˆ—çš„Code
             Else
                 col.Name = .Cells(rwIndex, 1).Value
             End If
-            'MsgBox col.Name, vbOK + vbInformation, "ÁĞ"
-            col.Code = .Cells(rwIndex, 2).Value 'Ö¸¶¨ÁĞÃû-------µÚ2ÁĞÊÇCode
-            col.DataType = .Cells(rwIndex, 3).Value 'Ö¸¶¨ÁĞÊı¾İÀàĞÍ-----µÚ3ÁĞÊÇÀàĞÍ
-            col.Comment = .Cells(rwIndex, 5).Value 'Ö¸¶¨ÁĞËµÃ÷-------µÚ5ÁĞÊÇÁĞËµÃ÷
+            'MsgBox col.Name, vbOK + vbInformation, "åˆ—"
+            col.Code = .Cells(rwIndex, 2).Value 'æŒ‡å®šåˆ—å-------ç¬¬2åˆ—æ˜¯Code
+            col.DataType = .Cells(rwIndex, 3).Value 'æŒ‡å®šåˆ—æ•°æ®ç±»å‹-----ç¬¬3åˆ—æ˜¯ç±»å‹
+            col.Comment = .Cells(rwIndex, 5).Value 'æŒ‡å®šåˆ—è¯´æ˜-------ç¬¬5åˆ—æ˜¯åˆ—è¯´æ˜
             If .Cells(rwIndex, 4).Value = "N" Then
-                col.Mandatory = true 'Ö¸¶¨ÁĞÊÇ·ñ¿É¿Õ true Îª²»¿É¿Õ ------µÚ4ÁĞÖ¸¶¨ÁĞÊÇ·ñÔÊĞíÎª¿Õ				
+                col.Mandatory = true 'æŒ‡å®šåˆ—æ˜¯å¦å¯ç©º true ä¸ºä¸å¯ç©º ------ç¬¬4åˆ—æŒ‡å®šåˆ—æ˜¯å¦å…è®¸ä¸ºç©º
+				col.DefaultValue = .Cells(rwIndex, 6).Value
             End If
             If rwIndex = 3 Then
-                col.Primary = true 'Ö¸¶¨Ö÷¼ü-------µÚ3ĞĞÊÇÖ÷¼üÁĞ
+                col.Primary = true 'æŒ‡å®šä¸»é”®-------ç¬¬3è¡Œæ˜¯ä¸»é”®åˆ—
             End If
          
     Next	
-	MsgBox "Éú³ÉÊı¾İ ±í½á¹¹¹²¼Æ " + CStr(count), vbOK + vbInformation, " ±í"
     End With
 Next
+MsgBox "ç”Ÿæˆæ•°æ® è¡¨ç»“æ„å…±è®¡ " + CStr(count), vbOK + vbInformation, " è¡¨"
 Exit Sub
 End sub
