@@ -1,0 +1,2 @@
+# generatorSQL
+通过excel生成powerdesign格式的物理模型，最后生成SQL
