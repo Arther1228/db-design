@@ -1,0 +1,168 @@
+'用PowerDesigner打开PD文件，按快捷键ctrl + shift + x 调出脚本执行窗口
+Option Explicit
+ 
+   Dim rowsNum
+   rowsNum = 0
+ 
+'-----------------------------------------------------------------------------
+' Main function
+'-----------------------------------------------------------------------------
+' Get the current active model
+Dim Model
+Set Model = ActiveModel
+ 
+If (Model Is Nothing) Or (Not Model.IsKindOf(PdPDM.cls_Model)) Then
+  MsgBox "The current model is not an PDM model."
+Else
+ output "PD模型名称:"+Model.name
+ ' Get the tables collection
+ '创建EXCEL APP
+ dim beginrow
+ DIM EXCEL,LISTSHEET,SHEET
+ set EXCEL = CREATEOBJECT("Excel.Application")
+ 
+ EXCEL.workbooks.add(-4167) '添加工作表
+ EXCEL.workbooks(1).sheets.add '添加第二张表
+ 
+ EXCEL.workbooks(1).sheets(1).name ="表清单"
+ EXCEL.workbooks(1).sheets(2).name ="表结构"
+ set LISTSHEET = EXCEL.workbooks(1).sheets("表清单")
+ set SHEET = EXCEL.workbooks(1).sheets("表结构")
+ ListOfTables Model, LISTSHEET '生成表清单
+ ShowProperties Model, SHEET '生成表结构
+ EXCEL.visible = true
+ 
+ '设置列宽和自动换行
+ LISTSHEET.Columns(1).ColumnWidth = 20 
+ LISTSHEET.Columns(2).ColumnWidth = 40 
+ LISTSHEET.Columns(3).ColumnWidth = 30
+ LISTSHEET.Columns(1).WrapText =true
+ LISTSHEET.Columns(2).WrapText =true
+ LISTSHEET.Columns(4).WrapText =true
+  
+ SHEET.Columns(1).ColumnWidth = 20 
+ SHEET.Columns(2).ColumnWidth = 30 
+ SHEET.Columns(3).ColumnWidth = 20
+ SHEET.Columns(4).ColumnWidth = 30
+ SHEET.Columns(7).ColumnWidth = 30
+ SHEET.Columns(1).WrapText =true
+ SHEET.Columns(2).WrapText =true
+ 'SHEET.Columns(3).WrapText =true
+ SHEET.Columns(4).WrapText =true
+ SHEET.Columns(7).WrapText =true
+  
+ '保存到文件
+ EXCEL.workbooks(1).SaveAs "C:\Users\admin\Desktop\物理设计说明书.xlsx"
+ EXCEL.workbooks(1).close() '关闭Excel程序
+End If
+ 
+'-----------------------------------------------------------------------------
+' Show properties of tables
+'-----------------------------------------------------------------------------
+ 
+Sub ShowProperties(mdl, sheet)
+   ' Show tables of the current model/package
+   rowsNum=0
+   beginrow = rowsNum+1
+   ' For each table
+   output "begin table struct"
+   Dim tab
+   For Each tab In mdl.tables
+      ShowTable tab,sheet
+   Next
+   if mdl.tables.count > 0 then
+        sheet.Range("A" & beginrow + 1 & ":A" & rowsNum).Rows.Group
+   end if
+   output "end table struct"
+End Sub
+ 
+'-----------------------------------------------------------------------------
+' Show table properties
+'-----------------------------------------------------------------------------
+Sub ShowTable(tab, sheet)
+   If IsObject(tab) Then
+     Dim rangFlag
+     rowsNum = rowsNum + 1
+      ' Show properties
+      Output "================================"
+      sheet.cells(rowsNum, 1) = "表名"
+      sheet.cells(rowsNum, 2) =tab.name
+      sheet.cells(rowsNum, 3) =tab.code
+      ' sheet.Range(sheet.cells(rowsNum, 2),sheet.cells(rowsNum, 3)).Merge
+      sheet.Range(sheet.cells(rowsNum, 1),sheet.cells(rowsNum, 3)).Font.Bold = True
+      rowsNum = rowsNum + 1
+      sheet.cells(rowsNum, 1) = "属性名"
+      sheet.cells(rowsNum, 2) = "说明"
+      sheet.cells(rowsNum, 3) = "字段类型"
+      sheet.cells(rowsNum, 4) = "注释"
+      sheet.cells(rowsNum, 5) = "是否主键"
+      sheet.cells(rowsNum, 6) = "是否非空"
+      sheet.cells(rowsNum, 7) = "默认值"
+       
+      '设置边框
+      sheet.Range(sheet.cells(rowsNum-1, 1),sheet.cells(rowsNum, 7)).Borders.LineStyle = "1"
+        Dim col ' running column
+        Dim colsNum
+        colsNum = 0
+      for each col in tab.columns
+        rowsNum = rowsNum + 1
+        colsNum = colsNum + 1
+        sheet.cells(rowsNum, 1) = col.code
+        sheet.cells(rowsNum, 2) = col.name  'col.comment
+        sheet.cells(rowsNum, 3) = col.datatype
+        sheet.cells(rowsNum, 4) = col.comment
+        If col.Primary = true Then
+         sheet.cells(rowsNum, 5) = "Y" 
+        Else
+         sheet.cells(rowsNum, 5) = " " 
+        End If
+        If col.Mandatory = true Then
+         sheet.cells(rowsNum, 6) = "Y" 
+        Else
+         sheet.cells(rowsNum, 6) = "N" 
+        End If
+        sheet.cells(rowsNum, 7) =  col.defaultvalue
+      next
+ 
+      sheet.Range(sheet.cells(rowsNum-colsNum+1,1),sheet.cells(rowsNum,7)).Borders.LineStyle = "1" 
+      rowsNum = rowsNum + 1
+      Output "FullDescription: "       + tab.Name
+   End If
+End Sub
+ 
+'-----------------------------------------------------------------------------
+' List of tables  表清单
+'-----------------------------------------------------------------------------
+Sub ListOfTables(mdl, sheet)
+   rowsNum=0
+   beginrow = rowsNum+1
+   rowsNum = rowsNum + 1
+   sheet.cells(rowsNum, 1) = "对象类型"
+   sheet.cells(rowsNum, 2) ="对象名称"
+   sheet.cells(rowsNum, 3) ="对象编码"
+   sheet.Range(sheet.cells(rowsNum,1),sheet.cells(rowsNum,3)).Borders.LineStyle = "1" 
+   output "begin list of tables"
+   Dim tab
+   ' For each table
+   For Each tab In mdl.tables
+       If IsObject(tab) Then
+         Dim rangFlag
+         rowsNum = rowsNum + 1
+          ' Show properties
+          Output "================================"
+          sheet.cells(rowsNum, 1) = "表"
+          sheet.cells(rowsNum, 2) =tab.name
+          sheet.cells(rowsNum, 3) =tab.code
+          ' sheet.Range(sheet.cells(rowsNum, 2),sheet.cells(rowsNum, 3)).Merge
+          '设置边框
+          sheet.Range(sheet.cells(rowsNum,1),sheet.cells(rowsNum,3)).Borders.LineStyle = "1" 
+          ' rowsNum = rowsNum + 1
+          Output "FullDescription: "       + tab.Name
+       End If  
+   Next
+ 
+   if mdl.tables.count > 0 then
+        sheet.Range("A" & beginrow + 1 & ":A" & rowsNum).Rows.Group
+   end if
+   output "end list of tables"
+End Sub
